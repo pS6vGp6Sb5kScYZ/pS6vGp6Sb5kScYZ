@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Upload, FileText, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { extractTextFromPDF } from '../utils/pdfExtractor';
 
 interface HomeProps {
   onAnalysisStart: (documentId: string) => void;
@@ -30,22 +31,22 @@ export default function Home({ onAnalysisStart }: HomeProps) {
     setIsDragging(false);
 
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && (droppedFile.type === 'text/plain' || droppedFile.name.endsWith('.txt'))) {
+    if (droppedFile && (droppedFile.type === 'application/pdf' || droppedFile.name.endsWith('.pdf'))) {
       setFile(droppedFile);
       setError('');
     } else {
-      setError('Veuillez sélectionner un fichier texte (.txt)');
+      setError('Veuillez sélectionner un fichier PDF (.pdf)');
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.type === 'text/plain' || selectedFile.name.endsWith('.txt')) {
+      if (selectedFile.type === 'application/pdf' || selectedFile.name.endsWith('.pdf')) {
         setFile(selectedFile);
         setError('');
       } else {
-        setError('Veuillez sélectionner un fichier texte (.txt)');
+        setError('Veuillez sélectionner un fichier PDF (.pdf)');
       }
     }
   };
@@ -57,7 +58,7 @@ export default function Home({ onAnalysisStart }: HomeProps) {
     setError('');
 
     try {
-      const content = await file.text();
+      const content = await extractTextFromPDF(file);
 
       const { data, error: insertError } = await supabase
         .from('documents')
@@ -121,11 +122,11 @@ export default function Home({ onAnalysisStart }: HomeProps) {
                 >
                   Parcourir les fichiers
                 </button>
-                <p className="text-sm text-gray-500 mt-4">Formats acceptés : .txt</p>
+                <p className="text-sm text-gray-500 mt-4">Formats acceptés : .pdf</p>
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".txt"
+                  accept=".pdf,application/pdf"
                   onChange={handleFileSelect}
                   className="hidden"
                 />

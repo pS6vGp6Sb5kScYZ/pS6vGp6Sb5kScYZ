@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileCheck2, LogOut, FileText, Calendar, TrendingDown, AlertCircle, ExternalLink } from 'lucide-react';
+import { FileCheck2, LogOut, FileText, TrendingDown, AlertCircle, ExternalLink } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
